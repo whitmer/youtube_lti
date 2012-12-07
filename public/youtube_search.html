@@ -1,0 +1,62 @@
+<html>
+  <body>
+  <h1>YouTube Searcher</h1>
+  <p>Search for a YouTube video below. The first result
+  is what will be shown whenever anyone loads this app.
+  </p>
+  <form id="form">
+    <input type="text" name="query" id="query"/>
+    <button type="submit">I'm Feeling Lucky</button>
+  </form>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script>
+    // Remember the placement_id so we can persist one a video is found
+    var placement_id = location.href.match(/placement_id=([^&#]+)/)[1];
+    
+    // AJAX call to remember the placement for future launches
+    function rememberVideo(video_id) {
+      $.ajax({
+        url: "/set_video",
+        type: 'POST',
+        data: {
+          placement_id: placement_id,
+          video_id: video_id
+        },
+        success: function(data) {
+          if(data.success) {
+            alert("Video set! Redirecting now...");
+            location.href = "https://www.youtube.com/embed/" + video_id;
+          } else {
+            alert("There was a problem setting the video.");
+          }
+        },
+        dataType: 'json'
+      });
+    }
+    
+    // JSONP call to search for YouTube videos
+    function findVideo(query) {
+      # 
+      var url = "https://gdata.youtube.com/feeds/api/videos?v=2&q=" + query + "&orderby=relevance&alt=json-in-script";
+      $.ajax({
+        url: url,
+        success: function(data) {
+          // Grad the *first* video and use that one.
+          // If you wanted to list the videos instead this would be the place to
+          // iterate through the results. The attribute names are... different, 
+          // but you can find thumbnails, descriptions, durations, etc.
+          var video_id = data.feed.entry[0].id['$t'].match(/\w+$/)[0];
+          rememberVideo(video_id);
+        },
+        dataType: 'jsonp'
+      });
+    }
+    
+    // When the user submits the search form, trigger the JSONP lookup
+    $("#form").submit(function(event) {
+      event.preventDefault();
+      findVideo($("#query").val());
+    });
+  </script>
+  </body>
+</html>
