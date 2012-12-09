@@ -18,9 +18,9 @@ require 'sinatra'
 require 'dm-core'
 require 'dm-migrations'
 
-# sinatra wants to set x-frame-options by default, disable it
+# Sinatra wants to set x-frame-options by default, disable it
 disable :protection
-# enable sessions so we can remember the launch info between http requests, as
+# Enable sessions so we can remember the launch info between http requests, as
 # the user takes the assessment
 enable :sessions
 
@@ -38,15 +38,17 @@ post "/lti_launch" do
       params['tool_consumer_instance_guid']
   placement = Placement.first(:placement_id => placement_id)
   if placement
-    # use /embed instead of /v or it won't work in an iframe
+    # Use /embed instead of /v or it won't work in an iframe.
+    # It's also a good idea to use https whenever possible, since some
+    # platforms (Canvas included) run everything over SSL.
     redirect to "https://youtube.com/embed/"  + placement.video_id
   else
     # use a cookie-based session to remember placement permission
     session["can_set_" + placement_id] = true
 
-    # let the user pick the video to use for this placement
-    # if you want to make sure students don't pick a video before the teacher
-    # can get to this placement, you would check the "roles" parameter
+    # Let the user pick the video to use for this placement.
+    # If you want to make sure students don't pick a video before the teacher
+    # can get to this placement, you would check the "roles" parameter.
     redirect to ("/youtube_search.html?placement_id=" + placement_id)
   end
 end

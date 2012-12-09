@@ -36,7 +36,7 @@
     
     // JSONP call to search for YouTube videos
     function findVideo(query) {
-      # 
+      // YouTube API endpoint.
       var url = "https://gdata.youtube.com/feeds/api/videos?v=2&q=" + query + "&orderby=relevance&alt=json-in-script";
       $.ajax({
         url: url,
