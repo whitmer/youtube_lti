@@ -12,4 +12,4 @@ More information available here:  http://brianwhitmer.blogspot.com/2012/12/build
 - bundle install
 - ruby youtube_lti.rb
 - The server should now be running at http://localhost:4567
-- Set the LTI launch URL to http://loocalhost:4567/lti_launch
+- Set the LTI launch URL to http://localhost:4567/lti_launch
